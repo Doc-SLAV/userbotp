@@ -12,7 +12,6 @@
   "repository": "https://github.com/AvinashReddy3108/PaperplaneExtended",
   "website": "https://telegra.ph/How-to-host-a-Telegram-Userbot-07-24",
   "success_url": "https://t.me/PaperplaneExtended",
-  "stack": "container",
   "env": {
     "API_KEY": {
       "description": "Get this value from my.telegram.org.",
@@ -25,6 +24,19 @@
     "STRING_SESSION": {
       "description": "Get this value by running [python3 string_session.py] in Termux or local system.",
       "required": true
+    },
+    "HEROKU_MEMEZ": {
+      "description": "This should be True if the userbor is running on a Heroku Dyno.",
+      "value": "True",
+      "required": true
+    },
+    "HEROKU_API_KEY": {
+      "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account'",
+      "value": ""
+    },
+    "HEROKU_APP_NAME": {
+      "description": "Add the Heroku app name here. It helps with userbot updates.",
+      "required": false
     },
     "COUNTRY": {
       "description": "Set your Country to be used in the .time and .date commands.",
@@ -150,5 +162,18 @@
         "version": "9.5"
       }
     }
-  ]
+  ],
+  "buildpacks": [{
+    "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+  }, {
+    "url": "https://github.com/opendoor-labs/heroku-buildpack-p7zip"
+  }, {
+    "url": "https://github.com/amivin/aria2-heroku"
+  }, {
+    "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+  }, {
+    "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+  }, {
+    "url": "heroku/python"
+  }]
 }
