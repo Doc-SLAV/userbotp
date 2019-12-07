@@ -32,18 +32,6 @@ async def is_off_br(br):
             return 1
     return
 
-async def install_requirements():
-    import os
-    reqs = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        'requirements.txt'
-    process = await asyncio.create_subprocess_shell(
-            ' '.join(sys.executable, "-m", "pip", "install", "-r", str(reqs)),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-    await process.communicate()
-
 
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
 async def upstream(ups):
