@@ -13,7 +13,7 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP, bot
+from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME
 from userbot.events import register
 
 
@@ -116,7 +116,7 @@ async def upstream(ups):
     ups_rem.fetch(ac_br)
     await ups.edit('`Successfully Updated!\n'
                    'Bot is restarting... Wait for a second!`')
-    await install_requirements
+    await install_requirements()
     await bot.disconnect()
     # Spin a new instance of bot
     execl(sys.executable, sys.executable, *sys.argv)
