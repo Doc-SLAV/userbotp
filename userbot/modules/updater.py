@@ -104,7 +104,6 @@ async def upstream(ups):
     ups_rem.fetch(ac_br)
     await ups.edit('`Successfully Updated!\n'
                    'Bot is restarting... Wait for a second!`')
-    await install_requirements()
     await bot.disconnect()
     # Spin a new instance of bot
     execl(sys.executable, sys.executable, *sys.argv)
