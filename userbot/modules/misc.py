@@ -14,7 +14,7 @@ import os
 import io
 import sys
 import json
-from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot
+from userbot import BOTLOG, BOTLOG_CHATID, CMD_HELP, bot, UPSTREAM_REPO_URL
 from userbot.events import register
 
 
@@ -72,22 +72,6 @@ async def killdabot(event):
     execl(sys.executable, sys.executable, *sys.argv)
 
 
-@register(outgoing=True, pattern="^.creator$")
-async def creator(e):
-    await e.edit("Feel free to talk to [Avinash Reddy](https://t.me/AvinashReddy3108), the maintainer of this awesome userbot.")
-
-
-@register(outgoing=True, pattern="^.readme$")
-async def reedme(e):
-    await e.edit(
-        "Here's something for you to read:\n"
-        "\n[Paperplane Extended's README.md file](https://github.com/AvinashReddy3108/PaperplaneExtended/blob/master/README.md)"
-        "\n[Setup Guide - Basic](https://telegra.ph/How-to-host-a-Telegram-Userbot-07-24)"
-        "\n[Setup Guide - Google Drive](https://telegra.ph/How-To-Setup-GDrive-07-27)"
-        "\n[Setup Guide - LastFM Module](https://telegra.ph/How-to-set-up-LastFM-module-for-Paperplane-userbot-08-10)"
-    )
-
-
 # Copyright (c) Gegham Zakaryan | 2019
 @register(outgoing=True, pattern="^.repeat (.*)")
 async def repeat(rep):
@@ -107,7 +91,7 @@ async def repeat(rep):
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     await wannasee.edit(
-        "Click [here](https://github.com/AvinashReddy3108/PaperplaneExtended) to open Paperplane Extended's GitHub page."
+        f"Click [here]({UPSTREAM_REPO_URL}) to open my userbot's repository."
     )
 
 
@@ -154,16 +138,6 @@ CMD_HELP.update({
 hear Windows XP shutdown sound... but you don't."
 })
 
-CMD_HELP.update(
-    {'support': ".support\
-\nUsage: If you need help, use this command."})
-
-CMD_HELP.update({
-    'community':
-    ".community\
-\nUsage: Join the awesome Paperplane userbot community !!"
-})
-
 CMD_HELP.update({
     'repo':
     '.repo\
@@ -175,10 +149,6 @@ CMD_HELP.update({
     ".readme\
 \nUsage: Provide links to setup the userbot and it's modules."
 })
-
-CMD_HELP.update(
-    {"creator": ".creator\
-\nUsage: Know who created this awesome userbot !!"})
 
 CMD_HELP.update({
     "repeat":
