@@ -70,7 +70,7 @@ async def upstream(ups):
         delta_patch = origin.fetch()
         repo.git.reset("--hard", "FETCH_HEAD")
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
-        patch_commits = repo.iter_commits(f"HEAD..{fetched_items[0].ref.name}")
+        patch_commits = repo.iter_commits(f"HEAD..{delta_patch[0].ref.name}")
         old_commit = repo.head.commit
         for diff_added in old_commit.diff('FETCH_HEAD').iter_change_type('M'):
             if "requirements.txt" in diff_added.b_path:
