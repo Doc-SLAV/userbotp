@@ -47,6 +47,7 @@ async def get_weather(weather):
         return
 
     APPID = OWM_API
+    result = None
 
     if not weather.pattern_match.group(1):
         CITY = DEFCITY
@@ -121,17 +122,21 @@ async def get_weather(weather):
         xx = datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
         return xx
 
-    await weather.edit(
-        f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
-        +
-        f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
-        +
-        f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
-        + f"**Humidity:** `{humidity}%`\n" +
-        f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n" +
-        f"**Sunrise:** `{sun(sunrise)}`\n" +
-        f"**Sunset:** `{sun(sunset)}`\n\n" + f"**{desc}**\n" +
-        f"`{cityname}, {fullc_n}`\n" + f"`{time}`")
+    try:
+        result+=f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
+        result+=f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
+        result+=f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
+        result+=f"**Humidity:** `{humidity}%`\n"
+        result+=f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n"
+        result+=f"**Sunrise:** `{sun(sunrise)}`\n"
+        result+=f"**Sunset:** `{sun(sunset)}`\n"
+        result+=f"**{desc}**\n"
+        result+=f"`{cityname}, {fullc_n}`\n"
+        result+=f"`{time}`"
+    except Exception:
+        pass
+    
+    await weather.edit(result)
 
 
 CMD_HELP.update({
