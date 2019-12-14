@@ -7,7 +7,8 @@
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove, execl
+from os import remove, execl, path
+import asyncio
 import sys
 
 from git import Repo
@@ -17,6 +18,10 @@ from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME
 from userbot.events import register
 
 
+basedir = path.abspath(path.curdir)
+
+requirements_path = path.join(path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')
+
 async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
@@ -24,14 +29,18 @@ async def gen_chlog(repo, diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
-
-async def is_off_br(br):
-    off_br = ['sql-extended', 'sql-dirty']
-    for k in off_br:
-        if k == br:
-            return 1
-    return
-
+async def update_requirements():
+    reqs = str(requirements_path)
+    try:
+        process = await asyncio.create_subprocess_shell(
+            ' '.join([sys.executable, "-m", "pip", "install", "-r", reqs]),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        await process.communicate()
+        return process.returncode
+    except Exception:
+        return
 
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
 async def upstream(ups):
@@ -42,30 +51,42 @@ async def upstream(ups):
 
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
-        repo = Repo()
+        repo = Repo(basedir)
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
+        repo.__del__()
         return
     except GitCommandError as error:
         await ups.edit(f'{txt}\n`Early failure! {error}`')
+        repo.__del__()
         return
     except InvalidGitRepositoryError:
-        repo = Repo.init()
-        await ups.edit(
-            "`Warning: Force-Syncing to the latest stable code from repo.`\
-            \nI may lose my downloaded files during this update."
-        )
+        repo = Repo.init(basedir)
         origin = repo.create_remote('upstream', off_repo)
-        origin.fetch()
-        repo.create_head('sql-extended', origin.refs.master)
-        repo.heads.master.checkout(True)
-
+        if not origin.exists():
+            await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
+            repo.__del__()
+            return
+        delta_patch = origin.fetch()
+        repo.git.reset("--hard", "FETCH_HEAD")
+        repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+        patch_commits = repo.iter_commits(f"HEAD..{fetched_items[0].ref.name}")
+        old_commit = repo.head.commit
+        for diff_added in old_commit.diff('FETCH_HEAD').iter_change_type('M'):
+            if "requirements.txt" in diff_added.b_path:
+                await ups.edit(f'`Updating PIP requirements, please wait.`')
+                update_pip = await update_requirements()
+                if update_pip == 0:
+                    await ups.edit(f'`Successfully updated the pip packages.`')
+                else:
+                    await ups.edit(f'`Please update the requirements manually.`')
+                    break
     ac_br = repo.active_branch.name
-    if not await is_off_br(ac_br):
+    if ac_br != "master":
         await ups.edit(
             f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
             in that case, Updater is unable to identify which branch is to be merged. \
-            please checkout to any official branch`')
+            please checkout to the official branch`')
         return
 
     try:
@@ -102,13 +123,34 @@ async def upstream(ups):
 
     await ups.edit('`New update found, updating...`')
     ups_rem.fetch(ac_br)
+    
+    if HEROKU_MEMEZ:
+        if not HEROKU_APIKEY or not HEROKU_APPNAME:
+            await ups.edit(f'{txt}\n`Missing Heroku credentials for updating userbot dyno.`')
+            return
+        else:
+            import heroku3
+            heroku = heroku3.from_key(HEROKU_APIKEY)
+            heroku_applications = heroku.apps()
+            heroku_app = HEROKU_APPNAME
+            heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
+            
+            # Herkoku Dyno - Simply git pull the code in the dyno.
+            if "heroku" in repo.remotes:
+                remote = repo.remote("heroku")
+                remote.set_url(heroku_git_url)
+            else:
+                remote = repo.create_remote("heroku", heroku_git_url)
+                
+    await remote.push(refspec="HEAD:refs/heads/master")
+    
     await ups.edit('`Successfully Updated!\n'
                    'Bot is restarting... Wait for a second!`')
+    
     await bot.disconnect()
+    
     # Spin a new instance of bot
     execl(sys.executable, sys.executable, *sys.argv)
-    # Shut the existing one down
-    exit()
 
 
 CMD_HELP.update({
