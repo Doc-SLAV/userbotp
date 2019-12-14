@@ -55,6 +55,7 @@ async def upstream(ups):
         origin.fetch()
         repo.git.reset("--hard", "FETCH_HEAD")
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+
     ac_br = repo.active_branch.name
     if ac_br != "master":
         await ups.edit(
