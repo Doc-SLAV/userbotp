@@ -20,10 +20,10 @@ from userbot.events import register
 
 basedir = path.abspath(path.curdir)
 
-async def gen_chlog(repo, diff):
+async def gen_chlog(commits):
     ch_log = ''
     d_form = "%d/%m/%y"
-    for c in repo.iter_commits(diff):
+    for c in commits:
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
@@ -36,6 +36,7 @@ async def upstream(ups):
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
         repo = Repo(basedir)
+        fetched_items = repo.remotes.origin.fetch()
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
         repo.__del__()
@@ -51,9 +52,11 @@ async def upstream(ups):
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
             return
-        origin.fetch()
-        repo.git.reset("--hard", "FETCH_HEAD")
+        fetched_items = origin.fetch()
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+
+    fetched_commits = repo.iter_commits(f"HEAD..{fetched_items[0].ref.name}")
+    old_commit = repo.head.commit
 
     ac_br = repo.active_branch.name
     if ac_br != "master":
@@ -64,17 +67,22 @@ async def upstream(ups):
         return
 
     try:
-        repo.create_remote('upstream', UPSTREAM_REPO_URL)
-    except BaseException:
-        pass
+        repo.remotes.origin.pull()
+    except GitCommandError as error:
+        await ups.edit(f'{txt}\n`Git pull failure: {error}`')
+        repo.__del__()
+        return
 
-    ups_rem = repo.remote('upstream')
-    ups_rem.fetch(ac_br)
-    changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
+    new_commit = repo.head.commit
+    if old_commit == new_commit:
+        await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
+        repo.__del__()
+        return
+
+    changelog = await gen_chlog(fetched_commits)
 
     if not changelog:
-        await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
-        return
+        changelog = "`Well, this is embarassing. I could not generate the changelog for some reason.`"
 
     if conf != "now":
         changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
@@ -96,7 +104,6 @@ async def upstream(ups):
         return
 
     await ups.edit('`New update found, updating...`')
-    ups_rem.fetch(ac_br)
     
     if HEROKU_MEMEZ:
         if not HEROKU_APIKEY or not HEROKU_APPNAME:
@@ -113,6 +120,11 @@ async def upstream(ups):
                     heroku_app = app
                     break
 
+            for build in heroku_app.builds():
+            if build.status == "pending":
+                await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
+                return
+            
             heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
 
             if "heroku" in repo.remotes:
@@ -120,23 +132,26 @@ async def upstream(ups):
                 remote.set_url(heroku_git_url)
             else:
                 remote = repo.create_remote("heroku", heroku_git_url)
-                
-        for build in heroku_app.builds():
-            if build.status == "pending":
-                await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
-                return
-            else:
-                await remote.push(refspec="HEAD:refs/heads/master", force=True)
-                await ups.edit(f"`[HEROKU MEMEZ] Dyno build in progress for app {HEROKU_APPNAME}`\
-                \nCheck build progress [here](https://dashboard.heroku.com/apps/{HEROKU_APPNAME}/activity).")
-    
-    await ups.edit('`Successfully Updated!\n'
-                   'Bot is restarting... Wait for a while!`')
-    
-    await bot.disconnect()
-    
-    # Spin a new instance of bot
-    execl(sys.executable, sys.executable, *sys.argv)
+
+            app.enable_feature('runtime-dyno-metadata')
+            
+            await ups.edit(f"`[HEROKU MEMEZ] Dyno build in progress for app {HEROKU_APPNAME}`\
+            \nCheck build progress [here](https://dashboard.heroku.com/apps/{HEROKU_APPNAME}/activity).")
+            
+            remote = repo.remotes['heroku']
+            
+            try:
+                remote.push(refspec=refspec=f'{repo.active_branch.name}:master', force=True)
+            except GitCommandError as error:
+                await ups.edit(f'{txt}\n`Git pull failure: {error}`')
+            repo.__del__()
+    else:
+        repo.__del__()
+        await ups.edit('`Successfully Updated!\n'
+                       'Bot is restarting... Wait for a while!`')
+        await bot.disconnect()
+        # Spin a new instance of bot
+        execl(sys.executable, sys.executable, *sys.argv)
 
 
 CMD_HELP.update({
