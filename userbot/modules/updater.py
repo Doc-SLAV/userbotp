@@ -36,6 +36,7 @@ async def upstream(ups):
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
         repo = Repo(basedir)
+        fetched_items = repo.remotes.origin.fetch()
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
         repo.__del__()
@@ -51,10 +52,11 @@ async def upstream(ups):
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
             return
+        fetched_items = origin.fetch()
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
 
     ac_br = repo.active_branch.name
-    fetched_commits = repo.iter_commits(f"HEAD..upstream/{ac_br}")
+    fetched_commits = repo.iter_commits(f"HEAD..{fetched_items[0].ref.name}")
     old_commit = repo.head.commit
 
     if ac_br != "master":
