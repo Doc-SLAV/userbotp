@@ -20,27 +20,12 @@ from userbot.events import register
 
 basedir = path.abspath(path.curdir)
 
-requirements_path = path.join(path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')
-
 async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
     for c in repo.iter_commits(diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
-
-async def update_requirements():
-    reqs_path = str(requirements_path)
-    try:
-        process = await asyncio.create_subprocess_shell(
-            ' '.join([sys.executable, "-m", "pip", "install", "-r", reqs_path]),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        await process.communicate()
-        return process.returncode
-    except Exception:
-        return
 
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
 async def upstream(ups):
@@ -67,20 +52,9 @@ async def upstream(ups):
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
             return
-        delta_patch = origin.fetch()
+        origin.fetch()
         repo.git.reset("--hard", "FETCH_HEAD")
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
-        patch_commits = repo.iter_commits(f"HEAD..{delta_patch[0].ref.name}")
-        old_commit = repo.head.commit
-        for diff_added in old_commit.diff('FETCH_HEAD').iter_change_type('M'):
-            if "requirements.txt" in diff_added.b_path:
-                await ups.edit(f'`Updating PIP requirements, please wait.`')
-                update_pip = await update_requirements()
-                if update_pip == 0:
-                    await ups.edit(f'`Successfully updated the pip packages.`')
-                else:
-                    await ups.edit(f'`Please update the requirements manually.`')
-                    break
     ac_br = repo.active_branch.name
     if ac_br != "master":
         await ups.edit(
