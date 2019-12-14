@@ -141,9 +141,9 @@ async def upstream(ups):
             remote = repo.remotes['heroku']
             
             try:
-                remote.push(refspec=refspec=f'{repo.active_branch.name}:master', force=True)
+                remote.push(refspec=f'{repo.active_branch.name}:master', force=True)
             except GitCommandError as error:
-                await ups.edit(f'{txt}\n`Git pull failure: {error}`')
+                await ups.edit(f"{txt}\n`Here's the error log: {error}`")
             repo.__del__()
     else:
         repo.__del__()
