@@ -108,7 +108,7 @@ async def upstream(ups):
             heroku_app = None
             heroku_applications = heroku.apps()
             for app in heroku_applications:
-                if i.name == HEROKU_APPNAME:
+                if app.name == str(HEROKU_APPNAME):
                     heroku_app = app
                     break
 
