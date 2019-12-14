@@ -107,21 +107,28 @@ async def upstream(ups):
             heroku = heroku3.from_key(HEROKU_APIKEY)
             heroku_app = None
             heroku_applications = heroku.apps()
+            
             for app in heroku_applications:
                 if app.name == str(HEROKU_APPNAME):
                     heroku_app = app
                     break
 
             heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
-            
-            # Herkoku Dyno - Simply git pull the code in the dyno.
+
             if "heroku" in repo.remotes:
                 remote = repo.remote("heroku")
                 remote.set_url(heroku_git_url)
             else:
                 remote = repo.create_remote("heroku", heroku_git_url)
                 
-    await remote.push(refspec="HEAD:refs/heads/master")
+        for build in heroku_app.builds():
+            if build.status == "pending":
+                await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
+                return
+            else:
+                await remote.push(refspec="HEAD:refs/heads/master", force=True)
+                await ups.edit(f"`[HEROKU MEMEZ] Dyno build in progress for app {HEROKU_APPNAME}`\
+                \nCheck build progress [here](https://dashboard.heroku.com/apps/{HEROKU_APPNAME}/activity).")
     
     await ups.edit('`Successfully Updated!\n'
                    'Bot is restarting... Wait for a while!`')
