@@ -45,13 +45,14 @@ async def upstream(ups):
         await ups.edit(f'{txt}\n`Early failure! {error}`')
         repo.__del__()
         return
-    except InvalidGitRepositoryError:
+    except (InvalidGitRepositoryError, AttributeError):
         repo = Repo.init(basedir)
         origin = repo.create_remote('upstream', UPSTREAM_REPO_URL)
         if not origin.exists():
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
             return
+        repo.git.reset("--hard")
         fetched_items = origin.fetch()
         repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
 
@@ -124,14 +125,12 @@ async def upstream(ups):
                 if build.status == "pending":
                     await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
                     return
-            
-            heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
+            heroku_git_url = f"https://api:{HEROKU_APIKEY}@git.heroku.com/{app.name}.git"
 
             if "heroku" in repo.remotes:
-                remote = repo.remote("heroku")
-                remote.set_url(heroku_git_url)
+                repo.remotes['heroku'].set_url(heroku_git_url)
             else:
-                remote = repo.create_remote("heroku", heroku_git_url)
+                repo.create_remote("heroku", heroku_git_url)
 
             app.enable_feature('runtime-dyno-metadata')
             
