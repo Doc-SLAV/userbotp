@@ -14,7 +14,7 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME
+from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME, UPSTREAM_REPO_URL
 from userbot.events import register
 
 
@@ -32,7 +32,6 @@ async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
     await ups.edit("`Checking for updates, please wait....`")
     conf = ups.pattern_match.group(1).lower()
-    off_repo = 'https://github.com/AvinashReddy3108/PaperplaneExtended.git'
 
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
@@ -47,7 +46,7 @@ async def upstream(ups):
         return
     except InvalidGitRepositoryError:
         repo = Repo.init(basedir)
-        origin = repo.create_remote('upstream', off_repo)
+        origin = repo.create_remote('upstream', UPSTREAM_REPO_URL)
         if not origin.exists():
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
@@ -65,7 +64,7 @@ async def upstream(ups):
         return
 
     try:
-        repo.create_remote('upstream', off_repo)
+        repo.create_remote('upstream', UPSTREAM_REPO_URL)
     except BaseException:
         pass
 
