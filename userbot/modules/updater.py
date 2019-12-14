@@ -121,9 +121,9 @@ async def upstream(ups):
                     break
 
             for build in heroku_app.builds():
-            if build.status == "pending":
-                await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
-                return
+                if build.status == "pending":
+                    await ups.edit('`There seems to be an ongoing build for a previous update, please wait for it to finish.`')
+                    return
             
             heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
 
