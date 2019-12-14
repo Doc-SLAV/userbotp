@@ -118,7 +118,7 @@ async def upstream(ups):
         else:
             await ups.edit(changelog_str)
         await ups.respond(
-            "`do \".update now\" to update\nDon't if using Heroku`")
+            "`do \".update now\" to update`")
         return
 
     await ups.edit('`New update found, updating...`')
