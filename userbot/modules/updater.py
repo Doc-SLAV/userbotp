@@ -105,8 +105,13 @@ async def upstream(ups):
         else:
             import heroku3
             heroku = heroku3.from_key(HEROKU_APIKEY)
+            heroku_app = None
             heroku_applications = heroku.apps()
-            heroku_app = HEROKU_APPNAME
+            for app in heroku_applications:
+                if i.name == HEROKU_APPNAME:
+                    heroku_app = app
+                    break
+
             heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{HEROKU_APIKEY}@")
             
             # Herkoku Dyno - Simply git pull the code in the dyno.
@@ -119,7 +124,7 @@ async def upstream(ups):
     await remote.push(refspec="HEAD:refs/heads/master")
     
     await ups.edit('`Successfully Updated!\n'
-                   'Bot is restarting... Wait for a second!`')
+                   'Bot is restarting... Wait for a while!`')
     
     await bot.disconnect()
     
