@@ -136,7 +136,7 @@
     },
     "DEFAULT_BIO": {
       "description": "Default profile bio.",
-      "value": "[PM = Report Spam] I ❤ ️@PaperplaneExtended",
+      "value": "[PM = Report Spam] Beware of my userbot.",
       "required": false
     },
     "ALIVE_NAME": {
