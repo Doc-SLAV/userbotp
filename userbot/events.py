@@ -86,9 +86,6 @@ def register(**args):
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
                     text = "**USERBOT ERROR REPORT**\n"
-                    link = "[PaperplaneExtended Support Chat](https://t.me/PaperplaneExtendedSupport)"
-                    text += "If you want to, you can report it"
-                    text += f"- just forward this message to {link}.\n"
                     text += "Nothing is logged except the fact of error and date\n"
 
                     ftext = "========== DISCLAIMER =========="
@@ -128,10 +125,8 @@ def register(**args):
                     file.close()
 
                     if LOGSPAMMER:
-                        await check.client.respond(
-                            "`Sorry, my userbot has crashed.\
-                        \nThe error logs are stored in the userbot's log chat.`"
-                        )
+                        await check.respond("`Sorry, my userbot has crashed.\
+                        \nThe error logs are stored in the userbot's log chat.`")
 
                     await check.client.send_file(send_to,
                                                  "error.log",
