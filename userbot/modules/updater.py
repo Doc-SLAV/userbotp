@@ -69,6 +69,7 @@ async def upstream(ups):
         await ups.edit(f'`[WARNING] Force-Syncing latest stable codebase, please wait..`')
         repo = Repo.init(basedir)
         origin = repo.create_remote('master', UPSTREAM_REPO_URL)
+        repo.git.reset('--hard', 'FETCH_HEAD')
         origin.pull('master')
         reqs_upgrade = await update_requirements()
         await ups.edit('`Updated succesfully, check the commit history for changelog.\n'
