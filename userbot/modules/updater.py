@@ -20,10 +20,10 @@ from userbot.events import register
 
 basedir = path.abspath(path.curdir)
 
-async def gen_chlog(commits):
+async def gen_chlog(repo, diff):
     ch_log = ''
     d_form = "%d/%m/%y"
-    for c in commits:
+    for c in repo.iter_commits(diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
@@ -36,7 +36,6 @@ async def upstream(ups):
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
         repo = Repo(basedir)
-        fetched_items = repo.remotes.origin.fetch()
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
         repo.__del__()
@@ -45,21 +44,18 @@ async def upstream(ups):
         await ups.edit(f'{txt}\n`Early failure! {error}`')
         repo.__del__()
         return
-    except (InvalidGitRepositoryError, AttributeError):
+    except InvalidGitRepositoryError:
         repo = Repo.init(basedir)
         origin = repo.create_remote('upstream', UPSTREAM_REPO_URL)
         if not origin.exists():
             await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
             repo.__del__()
             return
-        repo.git.reset("--hard")
-        fetched_items = origin.fetch()
-        repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+        origin.fetch()
+        repo.create_head('master', origin.refs.master)
+        repo.heads.master.checkout(True)
 
     ac_br = repo.active_branch.name
-    fetched_commits = repo.iter_commits(f"HEAD..{fetched_items[0].ref.name}")
-    old_commit = repo.head.commit
-
     if ac_br != "master":
         await ups.edit(
             f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
@@ -68,22 +64,17 @@ async def upstream(ups):
         return
 
     try:
-        repo.remotes.origin.pull()
-    except GitCommandError as error:
-        await ups.edit(f'{txt}\n`Git pull failure: {error}`')
-        repo.__del__()
-        return
+        repo.create_remote('upstream', OFFICIAL_UPSTREAM_REPO)
+    except BaseException:
+        pass
 
-    new_commit = repo.head.commit
-    if old_commit == new_commit:
-        await ups.edit(f'\n`Your BOT is` **up-to-date** `with` **{ac_br}**\n')
-        repo.__del__()
-        return
-
-    changelog = await gen_chlog(fetched_commits)
+    ups_rem = repo.remote('upstream')
+    ups_rem.fetch(ac_br)
+    changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
     if not changelog:
-        changelog = "`Well, this is embarassing. I could not generate the changelog for some reason.`"
+        await ups.edit(f'`Your BOT is`  **up-to-date**  `with`  **{ac_br}**')
+        return
 
     if conf != "now":
         changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
@@ -146,6 +137,8 @@ async def upstream(ups):
             repo.__del__()
     else:
         repo.__del__()
+        ups_rem.fetch(ac_br)
+        repo.git.reset('--hard', 'FETCH_HEAD')
         await ups.edit('`Successfully Updated!\n'
                        'Bot is restarting... Wait for a while!`')
         await bot.disconnect()
