@@ -75,7 +75,8 @@ async def mention_afk(mention):
             elif mention.sender_id in USERS:
                 if USERS[mention.sender_id] % randint(2, 4) == 0:
                     if EXCUSE:
-                        await mention.reply(f"In case you didn't notice, I'm still AFK.\
+                        await mention.reply(
+                            f"In case you didn't notice, I'm still AFK.\
                         \nReason: `{EXCUSE}`")
                     else:
                         await mention.reply(str(choice(AFKSTR)))
@@ -121,7 +122,8 @@ async def afk_on_pm(sender):
             elif apprv and sender.sender_id in USERS:
                 if USERS[sender.sender_id] % randint(2, 4) == 0:
                     if EXCUSE:
-                        await sender.reply(f"In case you didn't notice, I'm still AFK.\
+                        await sender.reply(
+                            f"In case you didn't notice, I'm still AFK.\
                         \nReason: `{EXCUSE}`")
                     else:
                         await sender.reply(str(choice(AFKSTR)))

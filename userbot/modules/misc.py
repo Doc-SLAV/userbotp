@@ -91,8 +91,7 @@ async def repeat(rep):
 async def repo_is_here(wannasee):
     """ For .repo command, just returns the repo URL. """
     await wannasee.edit(
-        f"Click [here]({UPSTREAM_REPO_URL}) to open my userbot's repository."
-    )
+        f"Click [here]({UPSTREAM_REPO_URL}) to open my userbot's repository.")
 
 
 @register(outgoing=True, pattern="^.raw$")

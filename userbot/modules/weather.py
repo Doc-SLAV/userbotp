@@ -36,6 +36,7 @@ async def get_tz(con):
     except KeyError:
         return
 
+
 @register(outgoing=True, pattern="^.weather(?: |$)(.*)")
 async def get_weather(weather):
     """ For .weather command, gets the current weather of a city. """
@@ -120,7 +121,7 @@ async def get_weather(weather):
     def sun(unix):
         xx = datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
         return xx
-    
+
     await weather.edit(
         f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
         +
