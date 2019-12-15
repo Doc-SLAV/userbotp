@@ -36,7 +36,6 @@ async def get_tz(con):
     except KeyError:
         return
 
-
 @register(outgoing=True, pattern="^.weather(?: |$)(.*)")
 async def get_weather(weather):
     """ For .weather command, gets the current weather of a city. """
@@ -122,21 +121,24 @@ async def get_weather(weather):
         xx = datetime.fromtimestamp(unix, tz=ctimezone).strftime("%I:%M %p")
         return xx
 
-    try:
-        result+=f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
-        result+=f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
-        result+=f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
-        result+=f"**Humidity:** `{humidity}%`\n"
-        result+=f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n"
-        result+=f"**Sunrise:** `{sun(sunrise)}`\n"
-        result+=f"**Sunset:** `{sun(sunset)}`\n"
-        result+=f"**{desc}**\n"
-        result+=f"`{cityname}, {fullc_n}`\n"
-        result+=f"`{time}`"
-    except Exception:
-        pass
+    def format_result():
+        try:
+            result+=f"**Temperature:** `{celsius(curtemp)}°C | {fahrenheit(curtemp)}°F`\n"
+            result+=f"**Min. Temp.:** `{celsius(min_temp)}°C | {fahrenheit(min_temp)}°F`\n"
+            result+=f"**Max. Temp.:** `{celsius(max_temp)}°C | {fahrenheit(max_temp)}°F`\n"
+            result+=f"**Humidity:** `{humidity}%`\n"
+            result+=f"**Wind:** `{kmph[0]} kmh | {mph[0]} mph, {findir}`\n"
+            result+=f"**Sunrise:** `{sun(sunrise)}`\n"
+            result+=f"**Sunset:** `{sun(sunset)}`\n"
+            result+=f"**{desc}**\n"
+            result+=f"`{cityname}, {fullc_n}`\n"
+            result+=f"`{time}`"
+        except Exception:
+            pass
+
+        return result
     
-    await weather.edit(result)
+    await weather.edit(format_result())
 
 
 CMD_HELP.update({
