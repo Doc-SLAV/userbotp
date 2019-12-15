@@ -143,7 +143,6 @@ async def upstream(ups):
                 await ups.edit(f"{txt}\n`Here's the error log: {error}`")
             repo.__del__()
     else:
-        repo.__del__()
         ups_rem.fetch(ac_br)
         repo.git.reset('--hard', 'FETCH_HEAD')
         await ups.edit('`Successfully Updated!\n'
