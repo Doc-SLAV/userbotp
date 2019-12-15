@@ -7,6 +7,7 @@
 
 from importlib import import_module
 from sys import argv
+from os import execle
 
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
 from userbot import LOGS, bot
@@ -35,4 +36,7 @@ LOGS.info(
 if len(argv) not in (1, 3, 4):
     bot.disconnect()
 else:
-    bot.run_until_disconnected()
+    bot.loop.run_until_complete(bot.disconnected)
+    if bot.reconnect:
+      args = [sys.executable, "-m", "userbot"]
+      os.execle(sys.executable, *args, os.environ)
