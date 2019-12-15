@@ -65,7 +65,7 @@ async def upstream(ups):
         return
 
     try:
-        repo.create_remote('upstream', OFFICIAL_UPSTREAM_REPO)
+        repo.create_remote('upstream', UPSTREAM_REPO_URL)
     except BaseException:
         pass
 
