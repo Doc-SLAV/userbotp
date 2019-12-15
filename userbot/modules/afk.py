@@ -56,6 +56,8 @@ async def mention_afk(mention):
     global USERS
     global ISAFK
     global AFFKREASON
+    ISAFK_SQL = False
+    AFKREASON_SQL = None
     if afk_db:
         ISAFK_SQL = gvarstatus("AFK_STATUS")
         AFKREASON_SQL = gvarstatus("AFK_REASON")
@@ -89,6 +91,8 @@ async def afk_on_pm(sender):
     """ Function which informs people that you are AFK in PM """
     global ISAFK
     global AFFKREASON
+    ISAFK_SQL = False
+    AFKREASON_SQL = None
     if afk_db:
         ISAFK_SQL = gvarstatus("AFK_STATUS")
         AFKREASON_SQL = gvarstatus("AFK_REASON")
@@ -135,6 +139,8 @@ async def set_afk(afk_e):
     string = afk_e.pattern_match.group(1)
     global ISAFK
     global AFFKREASON
+    ISAFK_SQL = False
+    AFKREASON_SQL = None
     if afk_db:
         ISAFK_SQL = gvarstatus("AFK_STATUS")
         AFKREASON_SQL = gvarstatus("AFK_REASON")
@@ -159,9 +165,10 @@ async def type_afk_is_not_true(notafk):
     """ This sets your status as not afk automatically when you write something while being afk """
     global COUNT_MSG
     global USERS
-    if not afk_db:
-        global ISAFK
-        global AFFKREASON
+    global ISAFK
+    global AFFKREASON
+    AFKREASON_SQL = None
+    ISAFK_SQL = False
     if afk_db:
         ISAFK_SQL = gvarstatus("AFK_STATUS")
         AFKREASON_SQL = gvarstatus("AFK_REASON")
