@@ -7,7 +7,7 @@
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove, execl, path
+from os import remove, execle, path
 import asyncio
 import sys
 
@@ -18,7 +18,10 @@ from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME, 
 from userbot.events import register
 
 basedir = path.abspath(path.curdir)
-
+requirements_path = path.join(
+    path.dirname(path.dirname(path.dirname(__file__))),
+    'requirements.txt'
+)
 
 async def gen_chlog(repo, diff):
     ch_log = ''
@@ -26,6 +29,19 @@ async def gen_chlog(repo, diff):
     for c in repo.iter_commits(diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
+
+async def update_requirements():
+    reqs = str(requirements_path)
+    try:
+        process = await asyncio.create_subprocess_shell(
+            ' '.join([sys.executable, "-m", "pip", "install", "-r", reqs]),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        await process.communicate()
+        return process.returncode
+    except Exception as e:        
+        return repr(e)
 
 
 @register(outgoing=True, pattern="^.update(?: |$)(.*)")
@@ -45,16 +61,23 @@ async def upstream(ups):
         await ups.edit(f'{txt}\n`Early failure! {error}`')
         repo.__del__()
         return
-    except InvalidGitRepositoryError:
-        repo = Repo.init(basedir)
-        origin = repo.create_remote('upstream', UPSTREAM_REPO_URL)
-        if not origin.exists():
-            await ups.edit(f'{txt}\n`The upstream remote is invalid.`')
-            repo.__del__()
+    except InvalidGitRepositoryError as error:
+        if conf != "now":
+            await ups.edit(f'`[WARNING] Directory {error} does not seems to be a git repository.\
+            \nTry force-updating the userbot using .update now.`')
             return
-        origin.fetch()
-        repo.create_head('master', origin.refs.master)
-        repo.heads.master.checkout(True)
+        await ups.edit(f'`[WARNING] Force-Syncing latest stable codebase, please wait..`')
+        repo = Repo.init(basedir)
+        origin = repo.create_remote('master', UPSTREAM_REPO_URL)
+        origin.pull('master')
+        reqs_upgrade = await update_requirements()
+        await ups.edit('`Updated succesfully, check the commit history for changelog.\n'
+                       'Bot is restarting... Wait for a while!`')
+        await bot.disconnect()
+        # Spin a new instance of bot
+        args = [sys.executable, "-m", "userbot"]
+        execle(sys.executable, *args, os.environ)
+        return
 
     ac_br = repo.active_branch.name
     if ac_br != "master":
@@ -145,11 +168,14 @@ async def upstream(ups):
     else:
         ups_rem.fetch(ac_br)
         repo.git.reset('--hard', 'FETCH_HEAD')
+        reqs_upgrade = await update_requirements()
         await ups.edit('`Successfully Updated!\n'
                        'Bot is restarting... Wait for a while!`')
         await bot.disconnect()
         # Spin a new instance of bot
-        execl(sys.executable, sys.executable, *sys.argv)
+        args = [sys.executable, "-m", "userbot"]
+        execle(sys.executable, *args, os.environ)
+        return
 
 
 CMD_HELP.update({
