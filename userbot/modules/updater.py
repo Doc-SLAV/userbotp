@@ -67,15 +67,15 @@ async def upstream(ups):
                 f'`[WARNING] Directory {error} does not seems to be a git repository.\
             \nTry force-updating the userbot using .update now.`')
             return
-	if os.path.exists(f"{basepath}\.git")
-        	repo = Repo.init(basedir)
-		repo.git.fetch(UPSTREAM_REPO_URL)
-		repo_worker.git.reset('--hard')
-		repo_worker.git.clean('-fdx')
-	else:
-		rmtree(basedir, ignore_errors=True)
-		makedirs(basedir)
-		Repo.clone_from(UPSTREAM_REPO_URL, basedir)
+        if os.path.exists(f"{basepath}\.git"):
+            repo = Repo.init(basedir)
+            repo.git.fetch(UPSTREAM_REPO_URL)
+            repo_worker.git.reset('--hard')
+            repo_worker.git.clean('-fdx')
+        else:
+            rmtree(basedir, ignore_errors=True)
+            makedirs(basedir)
+            Repo.clone_from(UPSTREAM_REPO_URL, basedir)
         reqs_upgrade = await update_requirements()
         await ups.edit(
             '`Updated succesfully, check the commit history for changelog.\n'
