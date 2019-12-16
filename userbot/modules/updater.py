@@ -18,7 +18,6 @@ from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME, UPSTREAM_REPO_URL
 from userbot.events import register
 
-basedir = path.abspath(path.curdir)
 requirements_path = path.join(
     path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')
 
@@ -29,6 +28,11 @@ async def gen_chlog(repo, diff):
     for c in repo.iter_commits(diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
+
+
+async def initial_git(repo):
+    update = repo.create_remote('master', UPSTREAM_REPO_URL)
+    update.pull('master')
 
 
 async def update_requirements():
@@ -52,33 +56,28 @@ async def upstream(ups):
 
     try:
         txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
-        repo = Repo(basedir)
+        repo = Repo()
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
-        repo.__del__()
         return
     except GitCommandError as error:
         await ups.edit(f'{txt}\n`Early failure! {error}`')
-        repo.__del__()
         return
     except InvalidGitRepositoryError as error:
+        repo = Repo.init()
         if conf != "now":
             await ups.edit(
                 f'`[WARNING] Directory {error} does not seems to be a git repository.\
             \nTry force-updating the userbot using .update now.`')
+        return
+        try:
+            await ups.edit(
+                f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
+            )
+            await initial_git(repo)
+        except Exception as err:
+            await ups.edit(f'{txt}\n`{err}`')
             return
-        if path.exists(f"{basedir}\.git"):
-            repo = Repo.init(basedir)
-            repo.git.fetch(UPSTREAM_REPO_URL)
-            repo_worker.git.reset('--hard')
-            repo_worker.git.clean('-fdx')
-        else:
-            rmtree(basedir, ignore_errors=True)
-            try:
-                makedirs(basedir)
-            except FileExistsError:
-                pass
-            Repo.clone_from(UPSTREAM_REPO_URL, basedir)
         reqs_upgrade = await update_requirements()
         await ups.edit(
             '`Updated succesfully, check the commit history for changelog.\n'
@@ -112,16 +111,13 @@ async def upstream(ups):
                 await ups.edit(
                     f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
                 )
-                origin = repo.create_remote('master', UPSTREAM_REPO_URL)
-                repo.git.reset('--hard')
-                origin.pull('master')
+                await initial_git(repo)
                 reqs_upgrade = await update_requirements()
                 await ups.edit(
                     '`Updated succesfully, check the commit history for changelog.\n'
                     'Bot is restarting... Wait for a while!`')
             except Exception as error:
                 await ups.edit(f"{txt}\n`Here's the error log: {error}`")
-                repo.__del__()
                 return
             await bot.disconnect()
             # Spin a new instance of bot
@@ -197,13 +193,15 @@ async def upstream(ups):
                             force=True)
             except GitCommandError as error:
                 await ups.edit(f"{txt}\n`Here's the error log: {error}`")
-            repo.__del__()
+
     else:
-        ups_rem.fetch(ac_br)
-        repo.git.reset('--hard')
+        try:
+            ups_rem.pull(ac_br)
+        except GitCommandError:
+            repo.git.reset('--hard')
         reqs_upgrade = await update_requirements()
-        await ups.edit('`Successfully Updated!\n'
-                       'Bot is restarting... Wait for a while!`')
+        await ups.edit(
+            '`Successfully Updated!\nBot is restarting... Wait for a while!`')
         await bot.disconnect()
         # Spin a new instance of bot
         args = [sys.executable, "-m", "userbot"]
