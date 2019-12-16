@@ -67,7 +67,7 @@ async def upstream(ups):
                 f'`[WARNING] Directory {error} does not seems to be a git repository.\
             \nTry force-updating the userbot using .update now.`')
             return
-        if path.exists(f"{basepath}\.git"):
+        if path.exists(f"{basedir}\.git"):
             repo = Repo.init(basedir)
             repo.git.fetch(UPSTREAM_REPO_URL)
             repo_worker.git.reset('--hard')
