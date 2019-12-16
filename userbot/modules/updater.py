@@ -68,7 +68,7 @@ async def upstream(ups):
             return
         repo = Repo.init(basedir)
         origin = repo.create_remote('master', UPSTREAM_REPO_URL)
-        repo.git.reset('--hard', 'FETCH_HEAD')
+        repo.git.reset('--hard')
         origin.pull('master')
         reqs_upgrade = await update_requirements()
         await ups.edit(
@@ -104,7 +104,7 @@ async def upstream(ups):
                     f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
                 )
                 origin = repo.create_remote('master', UPSTREAM_REPO_URL)
-                repo.git.reset('--hard', 'FETCH_HEAD')
+                repo.git.reset('--hard')
                 origin.pull('master')
                 reqs_upgrade = await update_requirements()
                 await ups.edit(
@@ -191,7 +191,7 @@ async def upstream(ups):
             repo.__del__()
     else:
         ups_rem.fetch(ac_br)
-        repo.git.reset('--hard', 'FETCH_HEAD')
+        repo.git.reset('--hard')
         reqs_upgrade = await update_requirements()
         await ups.edit('`Successfully Updated!\n'
                        'Bot is restarting... Wait for a while!`')
