@@ -52,10 +52,13 @@ async def update_requirements():
 async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
     await ups.edit("`Checking for updates, please wait....`")
-    conf = ups.pattern_match.group(1).lower()
+    conf = ups.pattern_match.group(1)
+    force_update = None
+    off_repo = UPSTREAM_REPO_URL
 
     try:
-        txt = "`Oops.. Updater cannot continue due to some problems occured`\n\n**LOGTRACE:**\n"
+        txt = "`Oops.. Updater cannot continue due to "
+        txt += "some problems occured`\n\n**LOGTRACE:**\n"
         repo = Repo()
     except NoSuchPathError as error:
         await ups.edit(f'{txt}\n`directory {error} is not found`')
@@ -63,76 +66,43 @@ async def upstream(ups):
     except GitCommandError as error:
         await ups.edit(f'{txt}\n`Early failure! {error}`')
         return
-    except InvalidGitRepositoryError as error:
+    except InvalidGitRepositoryError:
         repo = Repo.init()
-        if conf != "now":
-            await ups.edit(
-                f'`[WARNING] Directory {error} does not seems to be a git repository.\
-            \nTry force-updating the userbot using .update now.`')
-        return
-        try:
-            await ups.edit(
-                f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
-            )
-            await initial_git(repo)
-        except Exception as err:
-            await ups.edit(f'{txt}\n`{err}`')
-            return
-        reqs_upgrade = await update_requirements()
-        await ups.edit(
-            '`Updated succesfully, check the commit history for changelog.\n'
-            'Bot is restarting... Wait for a while!`')
-        await bot.disconnect()
-        # Spin a new instance of bot
-        args = [sys.executable, "-m", "userbot"]
-        execle(sys.executable, *args, os.environ)
-        return
+        force_update = True
+        origin = repo.create_remote('upstream', off_repo)
+        origin.fetch()
+        repo.create_head('master', origin.refs.master)
+        repo.heads.master.checkout(True)
 
     ac_br = repo.active_branch.name
-    if ac_br != "master":
+    if ac_br != 'master':
         await ups.edit(
-            f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). \
-            in that case, Updater is unable to identify which branch is to be merged. \
-            please checkout to the official branch`')
+            f'**[UPDATER]:**` Looks like you are using your own custom branch ({ac_br}). '
+            'in that case, Updater is unable to identify '
+            'which branch is to be merged. '
+            'please checkout to any official branch`')
         return
 
     try:
-        repo.create_remote('upstream', UPSTREAM_REPO_URL)
-    except BaseException:
+        repo.create_remote('upstream', off_repo)
+    except Exception:
         pass
 
     ups_rem = repo.remote('upstream')
     ups_rem.fetch(ac_br)
-    try:
-        changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
-    except Exception as error:
-        if "fatal: bad revision" in str(error):
-            try:
-                await ups.edit(
-                    f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
-                )
-                await initial_git(repo)
-                reqs_upgrade = await update_requirements()
-                await ups.edit(
-                    '`Updated succesfully, check the commit history for changelog.\n'
-                    'Bot is restarting... Wait for a while!`')
-            except Exception as error:
-                await ups.edit(f"{txt}\n`Here's the error log: {error}`")
-                return
-            await bot.disconnect()
-            # Spin a new instance of bot
-            args = [sys.executable, "-m", "userbot"]
-            execle(sys.executable, *args, os.environ)
-            return
+    
+    changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
     if not changelog:
-        await ups.edit(f'`Your BOT is`  **up-to-date**  `with`  **{ac_br}**')
-        return
+        if not force_update:
+            await ups.edit(
+                f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
+            return
 
     if conf != "now":
         changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
         if len(changelog_str) > 4096:
-            await ups.edit("`Changelog is too big, sending it as a file.`")
+            await ups.edit("`Changelog is too big, view the file to see it.`")
             file = open("output.txt", "w+")
             file.write(changelog_str)
             file.close()
@@ -144,13 +114,12 @@ async def upstream(ups):
             remove("output.txt")
         else:
             await ups.edit(changelog_str)
-        await ups.respond("`do \".update now\" to update`")
+        await ups.respond('`do \".update now\" to update`')
         return
 
     await ups.edit('`New update found, updating...`')
-
     if HEROKU_MEMEZ:
-        if not HEROKU_APIKEY or not HEROKU_APPNAME:
+        if not (HEROKU_APIKEY or HEROKU_APPNAME):
             await ups.edit(
                 f'{txt}\n`Missing Heroku credentials for updating userbot dyno.`'
             )
@@ -160,49 +129,45 @@ async def upstream(ups):
             heroku = heroku3.from_key(HEROKU_APIKEY)
             heroku_app = None
             heroku_applications = heroku.apps()
-
             for app in heroku_applications:
                 if app.name == str(HEROKU_APPNAME):
                     heroku_app = app
                     break
-
-            for build in heroku_app.builds():
-                if build.status == "pending":
-                    await ups.edit(
-                        '`There seems to be an ongoing build for a previous update, please wait for it to finish.`'
-                    )
+                if heroku_app = None:
+                    await ups.edit(f'{txt}\n`Invalid Heroku credentials for updating userbot dyno.`')
                     return
-            heroku_git_url = f"https://api:{HEROKU_APIKEY}@git.heroku.com/{app.name}.git"
-
-            if "heroku" in repo.remotes:
-                repo.remotes['heroku'].set_url(heroku_git_url)
-            else:
-                repo.create_remote("heroku", heroku_git_url)
-
-            app.enable_feature('runtime-dyno-metadata')
-
-            await ups.edit(
-                f"`[HEROKU MEMEZ] Dyno build in progress for app {HEROKU_APPNAME}`\
-            \nCheck build progress [here](https://dashboard.heroku.com/apps/{HEROKU_APPNAME}/activity)."
-            )
-
-            remote = repo.remotes['heroku']
-
-            try:
-                remote.push(refspec=f'{repo.active_branch.name}:master',
-                            force=True)
-            except GitCommandError as error:
-                await ups.edit(f"{txt}\n`Here's the error log: {error}`")
-
+                else:
+                    for build in heroku_app.builds():
+                        if build.status == "pending":
+                            await ups.edit('`A userbot dyno build is in progress, please wait for it to finish.`')
+                            return
+                url = f"https://api:{HEROKU_APIKEY}@git.heroku.com/{heroku_app.name}.git"
+                if "heroku" in repo.remotes:
+                    repo.remotes['heroku'].set_url(url)
+                else:
+                    repo.create_remote('heroku', url)
+                heroku_app.enable_feature('runtime-dyno-metadata')
+                await ups.edit('`[HEROKU MEMEZ] Userbot dyno build in progress, please wait.`')
+                remote = repo.remotes['heroku']
+                try:
+                    remote.push(refspec=f'{repo.active_branch.name}:master')
+                    await ups.edit('`Successfully Updated!\n'
+                                   'Bot is restarting... Wait for a second!`')
+                    await ups.client.disconnect()
+                    # Spin a new instance of bot
+                    args = [sys.executable, "-m", "userbot"]
+                    execle(sys.executable, *args, os.environ)
+                    return
+                except GitCommandError as error:
+                    await ups.edit(f'{txt}\n`Here is the error log:\n{error}`')
+                    return
     else:
-        try:
-            ups_rem.pull(ac_br)
-        except GitCommandError:
-            repo.git.reset('--hard')
+        ups_rem.fetch(ac_br)
+        repo.git.reset('--hard')
         reqs_upgrade = await update_requirements()
-        await ups.edit(
-            '`Successfully Updated!\nBot is restarting... Wait for a while!`')
-        await bot.disconnect()
+        await ups.edit('`Successfully Updated!\n'
+                       'Bot is restarting... Wait for a second!`')
+        await ups.client.disconnect()
         # Spin a new instance of bot
         args = [sys.executable, "-m", "userbot"]
         execle(sys.executable, *args, os.environ)
