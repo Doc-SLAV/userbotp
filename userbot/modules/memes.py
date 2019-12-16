@@ -535,7 +535,7 @@ SLAP_TEMPLATES = [
     "picks up a {item} and {hits} {victim} with it.",
     "ties {victim} to a chair and {throws} a {item} at them.",
     "{hits} {victim} {where} with a {item}.",
-    "ties {victim} to a pole and whips them {where} with a {item}."
+    "ties {victim} to a pole and whips them {where} with a {item}.",
     "gave a friendly push to help {victim} learn to swim in lava.",
     "sent {victim} to /dev/null.", "sent {victim} down the memory hole.",
     "beheaded {victim}.", "threw {victim} off a building.",
@@ -854,12 +854,12 @@ async def zal(zgfy):
             continue
 
         for _ in range(0, 3):
-            randint = randint(0, 2)
+            zalgint = randint(0, 2)
 
-            if randint == 0:
+            if zalgint == 0:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[0]).strip()
-            elif randint == 1:
+            elif zalgint == 1:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[1]).strip()
             else:

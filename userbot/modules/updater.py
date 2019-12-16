@@ -19,9 +19,8 @@ from userbot.events import register
 
 basedir = path.abspath(path.curdir)
 requirements_path = path.join(
-    path.dirname(path.dirname(path.dirname(__file__))),
-    'requirements.txt'
-)
+    path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')
+
 
 async def gen_chlog(repo, diff):
     ch_log = ''
@@ -30,17 +29,17 @@ async def gen_chlog(repo, diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
 
+
 async def update_requirements():
     reqs = str(requirements_path)
     try:
         process = await asyncio.create_subprocess_shell(
             ' '.join([sys.executable, "-m", "pip", "install", "-r", reqs]),
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
+            stderr=asyncio.subprocess.PIPE)
         await process.communicate()
         return process.returncode
-    except Exception as e:        
+    except Exception as e:
         return repr(e)
 
 
@@ -63,17 +62,18 @@ async def upstream(ups):
         return
     except InvalidGitRepositoryError as error:
         if conf != "now":
-            await ups.edit(f'`[WARNING] Directory {error} does not seems to be a git repository.\
+            await ups.edit(
+                f'`[WARNING] Directory {error} does not seems to be a git repository.\
             \nTry force-updating the userbot using .update now.`')
             return
-        await ups.edit(f'`[WARNING] Force-Syncing latest stable codebase, please wait..`')
         repo = Repo.init(basedir)
         origin = repo.create_remote('master', UPSTREAM_REPO_URL)
         repo.git.reset('--hard', 'FETCH_HEAD')
         origin.pull('master')
         reqs_upgrade = await update_requirements()
-        await ups.edit('`Updated succesfully, check the commit history for changelog.\n'
-                       'Bot is restarting... Wait for a while!`')
+        await ups.edit(
+            '`Updated succesfully, check the commit history for changelog.\n'
+            'Bot is restarting... Wait for a while!`')
         await bot.disconnect()
         # Spin a new instance of bot
         args = [sys.executable, "-m", "userbot"]
@@ -95,7 +95,30 @@ async def upstream(ups):
 
     ups_rem = repo.remote('upstream')
     ups_rem.fetch(ac_br)
-    changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
+    try:
+        changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
+    except Exception as error:
+        if "fatal: bad revision" in str(error):
+            try:
+                await ups.edit(
+                    f'`[WARNING] Force-Syncing latest stable codebase, please wait..`'
+                )
+                origin = repo.create_remote('master', UPSTREAM_REPO_URL)
+                repo.git.reset('--hard', 'FETCH_HEAD')
+                origin.pull('master')
+                reqs_upgrade = await update_requirements()
+                await ups.edit(
+                    '`Updated succesfully, check the commit history for changelog.\n'
+                    'Bot is restarting... Wait for a while!`')
+            except Exception as error:
+                await ups.edit(f"{txt}\n`Here's the error log: {error}`")
+                repo.__del__()
+                return
+            await bot.disconnect()
+            # Spin a new instance of bot
+            args = [sys.executable, "-m", "userbot"]
+            execle(sys.executable, *args, os.environ)
+            return
 
     if not changelog:
         await ups.edit(f'`Your BOT is`  **up-to-date**  `with`  **{ac_br}**')

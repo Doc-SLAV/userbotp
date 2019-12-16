@@ -38,5 +38,5 @@ if len(argv) not in (1, 3, 4):
 else:
     bot.loop.run_until_complete(bot.disconnected)
     if bot.reconnect:
-      args = [sys.executable, "-m", "userbot"]
-      os.execle(sys.executable, *args, os.environ)
+        args = [sys.executable, "-m", "userbot"]
+        os.execle(sys.executable, *args, os.environ)
