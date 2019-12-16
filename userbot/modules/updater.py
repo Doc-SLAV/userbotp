@@ -7,7 +7,8 @@
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove, execle, path
+from os import remove, execle, path, makedirs
+from shutil import rmtree
 import asyncio
 import sys
 
@@ -66,10 +67,15 @@ async def upstream(ups):
                 f'`[WARNING] Directory {error} does not seems to be a git repository.\
             \nTry force-updating the userbot using .update now.`')
             return
-        repo = Repo.init(basedir)
-        origin = repo.create_remote('master', UPSTREAM_REPO_URL)
-        repo.git.reset('--hard')
-        origin.pull('master')
+	if os.path.exists(f"{basepath}\.git")
+        	repo = Repo.init(basedir)
+		repo.git.fetch(UPSTREAM_REPO_URL)
+		repo_worker.git.reset('--hard')
+		repo_worker.git.clean('-fdx')
+	else:
+		rmtree(basedir, ignore_errors=True)
+		makedirs(basedir)
+		Repo.clone_from(UPSTREAM_REPO_URL, basedir)
         reqs_upgrade = await update_requirements()
         await ups.edit(
             '`Updated succesfully, check the commit history for changelog.\n'
