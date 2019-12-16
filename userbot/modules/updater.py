@@ -74,7 +74,10 @@ async def upstream(ups):
             repo_worker.git.clean('-fdx')
         else:
             rmtree(basedir, ignore_errors=True)
-            makedirs(basedir)
+            try:
+                makedirs(basedir)
+            except FileExistsError:
+                pass
             Repo.clone_from(UPSTREAM_REPO_URL, basedir)
         reqs_upgrade = await update_requirements()
         await ups.edit(
