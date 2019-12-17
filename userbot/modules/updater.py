@@ -118,7 +118,7 @@ async def upstream(ups):
     ups_rem.fetch(ac_br)
     repo.git.reset("--hard")
     if HEROKU_MEMEZ:
-        if not (HEROKU_APIKEY or HEROKU_APPNAME):
+        if HEROKU_APIKEY is None or HEROKU_APPNAME is None:
             await ups.edit(
                 f'{txt}\n`Missing Heroku credentials for updating userbot dyno.`'
             )
