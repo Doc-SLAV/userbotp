@@ -53,7 +53,6 @@ async def upstream(ups):
     "For .update command, check if the bot is up to date, update if specified"
     await ups.edit("`Checking for updates, please wait....`")
     conf = ups.pattern_match.group(1)
-    force_update = None
     off_repo = UPSTREAM_REPO_URL
 
     try:
@@ -68,7 +67,6 @@ async def upstream(ups):
         return
     except InvalidGitRepositoryError:
         repo = Repo.init()
-        force_update = True
         origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
         repo.create_head('master', origin.refs.master)
@@ -94,10 +92,9 @@ async def upstream(ups):
     changelog = await gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
     if not changelog:
-        if not force_update:
-            await ups.edit(
-                f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
-            return
+        await ups.edit(
+            f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
+        return
 
     if conf != "now":
         changelog_str = f'**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`'
@@ -118,6 +115,8 @@ async def upstream(ups):
         return
 
     await ups.edit('`New update found, updating...`')
+    ups_rem.fetch(ac_br)
+    repo.git.reset("--hard")
     if HEROKU_MEMEZ:
         if not (HEROKU_APIKEY or HEROKU_APPNAME):
             await ups.edit(
@@ -151,19 +150,12 @@ async def upstream(ups):
                 remote = repo.remotes['heroku']
                 try:
                     remote.push(refspec=f'{repo.active_branch.name}:master')
-                    await ups.edit('`Successfully Updated!\n'
-                                   'Bot is restarting... Wait for a second!`')
-                    await ups.client.disconnect()
-                    # Spin a new instance of bot
-                    args = [sys.executable, "-m", "userbot"]
-                    execle(sys.executable, *args, os.environ)
-                    return
                 except GitCommandError as error:
                     await ups.edit(f'{txt}\n`Here is the error log:\n{error}`')
                     return
+                await ups.edit('`Successfully Updated!\n'
+                                   'Bot is restarting... Wait for a second!`')
     else:
-        ups_rem.fetch(ac_br)
-        repo.git.reset('--hard')
         reqs_upgrade = await update_requirements()
         await ups.edit('`Successfully Updated!\n'
                        'Bot is restarting... Wait for a second!`')
