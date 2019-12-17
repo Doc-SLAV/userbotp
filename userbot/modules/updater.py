@@ -133,7 +133,7 @@ async def upstream(ups):
                 if app.name == str(HEROKU_APPNAME):
                     heroku_app = app
                     break
-                if heroku_app = None:
+                if heroku_app is None:
                     await ups.edit(f'{txt}\n`Invalid Heroku credentials for updating userbot dyno.`')
                     return
                 else:
