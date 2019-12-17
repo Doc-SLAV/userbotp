@@ -106,17 +106,16 @@ async def incom_note(getnt):
                 msg_o = await getnt.client.get_messages(entity=BOTLOG_CHATID,
                                                         ids=int(
                                                             note.f_mesg_id))
+                await getnt.delete()
                 await getnt.client.send_message(getnt.chat_id,
                                                 msg_o.mesage,
                                                 reply_to=message_id_to_reply,
                                                 file=msg_o.media)
-                await getnt.delete()
-
             elif note and note.reply:
+                await getnt.delete()
                 await getnt.client.send_message(getnt.chat_id,
                                                 note.reply,
                                                 reply_to=message_id_to_reply)
-                await getnt.delete()
 
     except AttributeError:
         pass
