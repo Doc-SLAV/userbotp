@@ -7,7 +7,7 @@
 This module updates the userbot based on Upstream revision
 """
 
-from os import remove, execle, path, makedirs
+from os import remove, execle, path, makedirs, getenv
 from shutil import rmtree
 import asyncio
 import sys
@@ -15,7 +15,7 @@ import sys
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import CMD_HELP, bot, HEROKU_MEMEZ, HEROKU_APIKEY, HEROKU_APPNAME, UPSTREAM_REPO_URL
+from userbot import CMD_HELP, bot, HEROKU_APIKEY, HEROKU_APPNAME, UPSTREAM_REPO_URL
 from userbot.events import register
 
 requirements_path = path.join(
@@ -117,44 +117,44 @@ async def upstream(ups):
     await ups.edit('`New update found, updating...`')
     ups_rem.fetch(ac_br)
     repo.git.reset("--hard")
-    if HEROKU_MEMEZ:
-        if HEROKU_APIKEY is None or HEROKU_APPNAME is None:
-            await ups.edit(
-                f'{txt}\n`Missing Heroku credentials for updating userbot dyno.`'
-            )
+    if getenv("DYNO", False):
+        import heroku3
+        if not HEROKU_APIKEY:
+            await ups.edit('`[HEROKU MEMEZ] Please set up the HEROKU_APIKEY variable to be able to update userbot.`')
             return
-        else:
-            import heroku3
-            heroku = heroku3.from_key(HEROKU_APIKEY)
-            heroku_app = None
-            heroku_applications = heroku.apps()
-            for app in heroku_applications:
-                if app.name == str(HEROKU_APPNAME):
-                    heroku_app = app
-                    break
-                if heroku_app is None:
-                    await ups.edit(f'{txt}\n`Invalid Heroku credentials for updating userbot dyno.`')
-                    return
-                else:
-                    for build in heroku_app.builds():
-                        if build.status == "pending":
-                            await ups.edit('`A userbot dyno build is in progress, please wait for it to finish.`')
-                            return
-                url = f"https://api:{HEROKU_APIKEY}@git.heroku.com/{heroku_app.name}.git"
-                if "heroku" in repo.remotes:
-                    repo.remotes['heroku'].set_url(url)
-                else:
-                    repo.create_remote('heroku', url)
-                heroku_app.enable_feature('runtime-dyno-metadata')
-                await ups.edit('`[HEROKU MEMEZ] Userbot dyno build in progress, please wait.`')
-                remote = repo.remotes['heroku']
-                try:
-                    remote.push(refspec=f'{repo.active_branch.name}:master')
-                except GitCommandError as error:
-                    await ups.edit(f'{txt}\n`Here is the error log:\n{error}`')
-                    return
-                await ups.edit('`Successfully Updated!\n'
-                                   'Bot is restarting... Wait for a second!`')
+        heroku = heroku3.from_key(HEROKU_APIKEY)
+        heroku_app = None
+        heroku_applications = heroku.apps()
+        if not HEROKU_APPNAME:
+            await ups.edit('`[HEROKU MEMEZ] Please set up the HEROKU_APPNAME variable to be able to update userbot.`')
+            return
+        for app in heroku_applications:
+            if app.name == str(HEROKU_APPNAME):
+                heroku_app = app
+                break
+            if heroku_app is None:
+                await ups.edit(f'{txt}\n`Invalid Heroku credentials for updating userbot dyno.`')
+                return
+            else:
+                for build in heroku_app.builds():
+                    if build.status == "pending":
+                        await ups.edit('`A userbot dyno build is in progress, please wait for it to finish.`')
+                        return
+            url = f"https://api:{HEROKU_APIKEY}@git.heroku.com/{heroku_app.name}.git"
+            if "heroku" in repo.remotes:
+                repo.remotes['heroku'].set_url(url)
+            else:
+                repo.create_remote('heroku', url)
+            heroku_app.enable_feature('runtime-dyno-metadata')
+            await ups.edit('`[HEROKU MEMEZ] Userbot dyno build in progress, please wait.`')
+            remote = repo.remotes['heroku']
+            try:
+                remote.push(refspec=f'{repo.active_branch.name}:master')
+            except GitCommandError as error:
+                await ups.edit(f'{txt}\n`Here is the error log:\n{error}`')
+                return
+            await ups.edit('`Successfully Updated!\n'
+                               'Bot is restarting... Wait for a second!`')
     else:
         reqs_upgrade = await update_requirements()
         await ups.edit('`Successfully Updated!\n'
