@@ -126,7 +126,7 @@ async def amireallyalive(alive):
                      "Im On Mastah as Ur Bot😉😉\n\n"
                      f"Telethon version: {version.__version__} \n"
                      f"Python: {python_version()} \n"
-                      "Mod : @XinTact \n"
+                     f"Mod : @XinTact \n"
                      f"User: {DEFAULTUSER}"
                      "`")
 
