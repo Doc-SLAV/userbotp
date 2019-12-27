@@ -945,7 +945,7 @@ async def iqless(e):
 
 @register(outgoing=True, pattern="^.moon$")
 async def moon(event):
-    deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
+    deq = deque(list("🌕🌖🌗🌘🌑🌒🌓🌔🌕"))
     try:
         for x in range(32):
             await sleep(0.1)
