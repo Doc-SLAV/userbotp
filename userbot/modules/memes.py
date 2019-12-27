@@ -945,6 +945,19 @@ async def iqless(e):
 
 @register(outgoing=True, pattern="^.moon$")
 async def moon(event):
+    deq = deque(list("🌕🌖🌗🌘🌑🌒🌓🌔🌕"))
+    try:
+        for x in range(32):
+            await sleep(0.1)
+            await event.edit("".join(deq))
+            deq.rotate(1)
+    except BaseException:
+        return
+  
+                      
+                      
+@register(outgoing=True, pattern="^.sun$")
+async def sun(event):
     deq = deque(list("☀️🌤⛅️🌥☁️🌥⛅️🌤☀️"))
     try:
         for x in range(32):
@@ -954,8 +967,7 @@ async def moon(event):
     except BaseException:
         return
                       
-                      
-                      
+                                           
 @register(outgoing=True, pattern="^.clock$")
 async def clock(event):
     deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
