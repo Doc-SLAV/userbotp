@@ -933,7 +933,7 @@ async def metoo(hahayes):
 @register(outgoing=True, pattern="^Oof$")
 async def Oof(e):
     t = "Oof"
-    for j in range(15):
+    for j in range(20):
         t = t[:-1] + "of"
         await e.edit(t)
 
@@ -1104,7 +1104,7 @@ async def typewriter(typew):
     else:
         await typew.edit("`Give a text to type!`")
         return
-    sleep_time = 0.03
+    sleep_time = 0.003
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
