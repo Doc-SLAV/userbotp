@@ -175,38 +175,6 @@ EMOJIS = [
     "🚰",
 ]
 
-PENIS_TEMPLATE = [ 
-"""
-🍆🍆
-
-🍆🍆🍆
-
-  🍆🍆🍆
-
-    🍆🍆🍆
-
-     🍆🍆🍆
-
-       🍆🍆🍆
-
-        🍆🍆🍆
-
-         🍆🍆🍆
-
-          🍆🍆🍆
-
-          🍆🍆🍆
-
-      🍆🍆🍆🍆
-
- 🍆🍆🍆🍆🍆🍆
-
- 🍆🍆🍆  🍆🍆🍆
-
-    🍆🍆       🍆🍆
-
-"""
-]
 INSULT_STRINGS = [
     "Owww ... Such a stupid idiot.",
     "Don't drink and type.",
