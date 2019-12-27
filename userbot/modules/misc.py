@@ -40,15 +40,15 @@ async def sleepybot(time):
         await time.reply("Syntax: `.sleep [seconds]`")
     else:
         counter = int(time.pattern_match.group(1))
-        await time.edit("`I am sulking and snoozing....`")
+        await time.edit("`Tidur Dulu Gan :√....`")
         await sleep(2)
         if BOTLOG:
             await time.client.send_message(
                 BOTLOG_CHATID,
-                "You put the bot to sleep for " + str(counter) + " seconds",
+                "Bot Tidur Selama..." + str(counter) + " seconds",
             )
         await sleep(counter)
-        await time.edit("`OK, I'm awake now.`")
+        await time.edit("`OKEH, \nYaaa, Aku Bangun Sekarang.`")
 
 
 @register(outgoing=True, pattern="^.shutdown$")
