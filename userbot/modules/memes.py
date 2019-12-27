@@ -954,38 +954,10 @@ async def moon(event):
     except BaseException:
         return
 
-                      
-                      
-                      
-@register(outgoing=True, pattern=r"^.dick$")
-async def emoji_penis(e):
-    emoji = e.pattern_match.group()
-
-    await e.edit("Dickifying...")
-    message = PENIS_TEMPLATE
-    if emoji:
-        message = message.replace('🍆', emoji)
-
-    await e.edit("\n ' "
-                           "`\n🍆🍆`"
-                           "`\n🍆🍆🍆`"
-                             "`\n🍆🍆🍆`"
-                               "`\n🍆🍆🍆`"
-                                 "`\n🍆🍆🍆`"
-                                  "`\n🍆🍆🍆`"
-                                   "`\n🍆🍆🍆`"
-                                    "`\n🍆🍆🍆`"
-                                     "`\n🍆🍆🍆`"
-                                     "`\n🍆🍆🍆`"
-                                   "`\n🍆🍆🍆🍆`"
-                             "`\n🍆🍆🍆🍆🍆🍆`"
-                             "`\n🍆🍆🍆  🍆🍆🍆`"
-                               "`\n🍆🍆       🍆🍆`   ")                                                       
-                      
-                      
+                                                                                                                                                            
 @register(outgoing=True, pattern="^.sun$")
 async def sun(event):
-    deq = deque(list("☀️🌤⛅️🌥☁️🌥⛅️🌤☀️"))
+    deq = deque(list("☀️🌤⛅️🌥☁️🌥⛅️🌤"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -993,6 +965,18 @@ async def sun(event):
             deq.rotate(1)
     except BaseException:
         return
+
+                      
+@register(outgoing=True, pattern="^.line$")
+async def line(event):
+    deq = deque(list("- \ | / - \ | / -"))
+    try:
+        for x in range(32):
+            await sleep(0.1)
+            await event.edit("".join(deq))
+            deq.rotate(1)
+    except BaseException:
+        return         
                       
                                            
 @register(outgoing=True, pattern="^.clock$")
@@ -1131,7 +1115,7 @@ async def typewriter(typew):
     else:
         await typew.edit("`Give a text to type!`")
         return
-    sleep_time = 0.003
+    sleep_time = 0.001
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
