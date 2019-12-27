@@ -175,6 +175,38 @@ EMOJIS = [
     "🚰",
 ]
 
+PENIS_TEMPLATE = [ 
+"""
+🍆🍆
+
+🍆🍆🍆
+
+  🍆🍆🍆
+
+    🍆🍆🍆
+
+     🍆🍆🍆
+
+       🍆🍆🍆
+
+        🍆🍆🍆
+
+         🍆🍆🍆
+
+          🍆🍆🍆
+
+          🍆🍆🍆
+
+      🍆🍆🍆🍆
+
+ 🍆🍆🍆🍆🍆🍆
+
+ 🍆🍆🍆  🍆🍆🍆
+
+    🍆🍆       🍆🍆
+
+"""
+]
 INSULT_STRINGS = [
     "Owww ... Such a stupid idiot.",
     "Don't drink and type.",
@@ -953,7 +985,34 @@ async def moon(event):
             deq.rotate(1)
     except BaseException:
         return
-  
+
+                      
+                      
+                      
+@register(outgoing=True, pattern=r"^.dick$")
+async def emoji_penis(e):
+    emoji = e.pattern_match.group()
+
+    await e.edit("Dickifying...")
+    message = PENIS_TEMPLATE
+    if emoji:
+        message = message.replace('🍆', emoji)
+
+    await e.edit("\n ' "
+                           "`\n🍆🍆`"
+                           "`\n🍆🍆🍆`"
+                             "`\n🍆🍆🍆`"
+                               "`\n🍆🍆🍆`"
+                                 "`\n🍆🍆🍆`"
+                                  "`\n🍆🍆🍆`"
+                                   "`\n🍆🍆🍆`"
+                                    "`\n🍆🍆🍆`"
+                                     "`\n🍆🍆🍆`"
+                                     "`\n🍆🍆🍆`"
+                                   "`\n🍆🍆🍆🍆`"
+                             "`\n🍆🍆🍆🍆🍆🍆`"
+                             "`\n🍆🍆🍆  🍆🍆🍆`"
+                               "`\n🍆🍆       🍆🍆`   ")                                                       
                       
                       
 @register(outgoing=True, pattern="^.sun$")
