@@ -19,16 +19,7 @@ from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
 
 KANGING_STR = [
-    "Using Witchery to kang this sticker...",
-    "Plagiarising hehe...",
-    "Inviting this sticker over to my pack...",
-    "Kanging this sticker...",
-    "Hey that's a nice sticker!\nMind if I kang?!..",
-    "hehe me stel ur stikér\nhehe.",
-    "Ay look over there (☉｡☉)!→\nWhile I kang this...",
-    "Roses are red violets are blue, kanging this sticker so my pacc looks cool",
-    "Imprisoning this sticker...",
-    "Mr.Steal Your Sticker is stealing this sticker... ",
+    "ρυиτєи \nιנιи иγοℓοиg ѕτικєя  мϐαн ωκκωωκ",
 ]
 
 
@@ -71,10 +62,10 @@ async def kang(args):
             is_anim = True
             photo = 1
         else:
-            await args.edit("`Unsupported File!`")
+            await args.edit("`File e Ora Support!`")
             return
     else:
-        await args.edit("`I can't kang that...`")
+        await args.edit("`aku ga iso nyolong kang...`")
         return
 
     if photo:
@@ -110,7 +101,7 @@ async def kang(args):
             cmd = '/newanimated'
 
         response = urllib.request.urlopen(
-            urllib.request.Request(f'http://t.me/addstickers/{packname}'))
+            urllib.request.Request(f'@addstickers/{packname}'))
         htmlstr = response.read().decode("utf8").split('\n')
 
         if "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
@@ -236,8 +227,8 @@ async def kang(args):
                 # Ensure user doesn't get spamming notifications
                 await bot.send_read_acknowledge(conv.chat_id)
 
-        await args.edit(f"`Sticker kanged successfully!`\
-            \nPack can be found [here](@addstickers/{packname})",
+        await args.edit(f"`sԵíckҽɾ ճҽɾհαsíl ժí cօlօղց ^_^!`\
+            \nNyo Pack sing nyar [here](@addstickers/{packname})",
                         parse_mode='md')
 
 
