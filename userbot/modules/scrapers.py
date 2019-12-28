@@ -57,7 +57,7 @@ async def setlang(prog):
 @register(outgoing=True, pattern="^.carbon")
 async def carbon_api(e):
     """ A Wrapper for carbon.now.sh """
-    await e.edit("`Memproses ^_^..`")
+    await e.edit("`^_^ Sedang_Dicarikan ^_^..`")
     CARBON = 'https://carbon.now.sh/?l={lang}&code={code}'
     global CARBONLANG
     textx = await e.get_reply_message()
@@ -123,7 +123,7 @@ async def carbon_api(e):
 @register(outgoing=True, pattern="^.img (.*)")
 async def img_sampler(event):
     """ For .img command, search and return images matching the query. """
-    await event.edit("Memproses ^_^...")
+    await event.edit("^_^ Sedang_Dicarikan ^_^...")
     query = event.pattern_match.group(1)
     lim = findall(r"lim=\d+", query)
     try:
