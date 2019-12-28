@@ -933,7 +933,7 @@ async def metoo(hahayes):
 @register(outgoing=True, pattern="^Oof$")
 async def Oof(e):
     t = "Oof"
-    for j in range(20):
+    for j in range(15):
         t = t[:-1] + "of"
         await e.edit(t)
 
@@ -945,7 +945,7 @@ async def iqless(e):
 
 @register(outgoing=True, pattern="^.moon$")
 async def moon(event):
-    deq = deque(list("🌕🌖🌗🌘🌑🌒🌓🌔🌕"))
+    deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -953,6 +953,7 @@ async def moon(event):
             deq.rotate(1)
     except BaseException:
         return
+
 
 @register(outgoing=True, pattern="^.rain$")
 async def rain(event):
@@ -963,8 +964,9 @@ async def rain(event):
             await event.edit("".join(deq))
             deq.rotate(1)
     except BaseException:
-        return                      
-                                                                                                                                                            
+        return
+
+
 @register(outgoing=True, pattern="^.sun$")
 async def sun(event):
     deq = deque(list("☀️🌤⛅️🌥☁️🌥⛅️🌤"))
@@ -976,7 +978,7 @@ async def sun(event):
     except BaseException:
         return
 
-                      
+
 @register(outgoing=True, pattern="^.garis$")
 async def garis(event):
     deq = deque(list("- \ | / - \ | / -"))
@@ -986,9 +988,9 @@ async def garis(event):
             await event.edit("".join(deq))
             deq.rotate(1)
     except BaseException:
-        return         
-                      
-                                           
+        return
+
+
 @register(outgoing=True, pattern="^.clock$")
 async def clock(event):
     deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
@@ -1125,7 +1127,7 @@ async def typewriter(typew):
     else:
         await typew.edit("`Give a text to type!`")
         return
-    sleep_time = 0.001
+    sleep_time = 0.03
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
