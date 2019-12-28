@@ -101,7 +101,7 @@ async def kang(args):
             cmd = '/newanimated'
 
         response = urllib.request.urlopen(
-            urllib.request.Request(f'@addstickers/{packname}'))
+            urllib.request.Request(f'http://t.me/addstickers/{packname}'))
         htmlstr = response.read().decode("utf8").split('\n')
 
         if "  A <strong>Telegram</strong> user has created the <strong>Sticker&nbsp;Set</strong>." not in htmlstr:
@@ -158,8 +158,8 @@ async def kang(args):
                         # Ensure user doesn't get spamming notifications
                         await bot.send_read_acknowledge(conv.chat_id)
                         await args.edit(f"`Sticker added in a Different Pack !\
-                            \nThis Pack is Newly created!\
-                            \nYour pack can be found [here](@addstickers/{packname})",
+                            \nIki Pack Sticker Nyarmu!\
+                            \nNyo Link e [here](@addstickers/{packname})",
                                         parse_mode='md')
                         return
                 if is_anim:
