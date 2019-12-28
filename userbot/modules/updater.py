@@ -93,7 +93,7 @@ async def upstream(ups):
 
     if not changelog:
         await ups.edit(
-            f'\n`Your BOT is`  **up-to-date**  `with`  **{ac_br}**\n')
+            f'\n`Bot_Mu Sudah Paling `  **up-to-date**  `dengan`  **{ac_br}**\n')
         return
 
     if conf != "now":
