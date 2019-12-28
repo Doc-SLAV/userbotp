@@ -229,7 +229,7 @@ async def kang(args):
                 await bot.send_read_acknowledge(conv.chat_id)
 
         await args.edit(f"`sԵíckҽɾ ճҽɾհαsíl ժí cօlօղց ^_^!`\
-            \nNyo Pack sing nyar [iki](t.me/addstickers/{packname})",
+            \nNyo Pack sing nyar [terbaru](t.me/addstickers/{packname})",
                         parse_mode='md')
 
 
