@@ -19,7 +19,8 @@ from telethon.tl.types import InputStickerSetID
 from telethon.tl.types import DocumentAttributeSticker
 
 KANGING_STR = [
-    "          ρυиτєи \nιנιи иγοℓοиg ѕτικєя  мϐαн ωκκωωκ",
+    """
+                 ρυиτєи \nιנιи иγοℓοиg ѕτικєя  мϐαн ωκκωωκ"""
 ]
 
 
