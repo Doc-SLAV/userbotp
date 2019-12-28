@@ -43,9 +43,10 @@ async def spammer(e):
     await e.delete()
     await asyncio.wait([e.respond(spam_message) for i in range(counter)])
     if BOTLOG:
-        await e.client.send_message(BOTLOG_CHATID, "#SPAM\n"
+    done = await e.client.send_message(BOTLOG_CHATID, "#SPAM\n"
                                     "Spam was executed successfully")
-
+    await sleep(1)
+    await done.delete()
 
 @register(outgoing=True, pattern="^.picspam")
 async def tiny_pic_spam(e):
