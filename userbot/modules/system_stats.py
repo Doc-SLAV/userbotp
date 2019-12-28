@@ -125,9 +125,9 @@ async def amireallyalive(alive):
     await alive.edit("`"
                      "マスター上のイム 😉😉😉\n"
                      "出来上がり\n\n"
-                     f"テレソンバージョン: {version.__version__} \n"
-                     f"パイソン: {python_version()} \n"                     
-                     f"ユーザー: {DEFAULTUSER}"
+                     f"テレソンバージョン : [ {version.__version__} ] \n"
+                     f"パイソン         : [ {python_version()} ] \n"                     
+                     f"ユーザー         : [ {DEFAULTUSER} ]"
                      "`")
 
 
