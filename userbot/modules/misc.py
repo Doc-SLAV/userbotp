@@ -42,14 +42,10 @@ async def sleepybot(time):
         counter = int(time.pattern_match.group(1))
         await time.edit("`Tidur Dulu Gan :√....`")
         await sleep(2)
-        if BOTLOG:
-            await time.client.send_message(
-                BOTLOG_CHATID,
-                "Bot Tidur Selama..." + str(counter) + " seconds",
-            )
         await sleep(counter)
         await time.edit("`OKEH, \nYaaa, Aku Bangun Sekarang.`")
-
+        await sleep(2)
+        await time.delete()
 
 @register(outgoing=True, pattern="^.shutdown$")
 async def killdabot(event):
