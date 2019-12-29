@@ -955,9 +955,9 @@ async def moon(event):
         return
 
 
-@register(outgoing=True, pattern="^.rain$")
-async def moon(event):
-    deq = deque(list("⛈🌧🌦☁️☁️🌦🌧⛈🌩🌨🌩"))
+@register(outgoing=True, pattern="^.clock$")
+async def clock(event):
+    deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -968,8 +968,8 @@ async def moon(event):
 
 
 @register(outgoing=True, pattern="^.sun$")
-async def moon(event):
-    deq = deque(list("🌥☁️🌥⛅️🌤☀️🌤⛅️"))
+async def clock(event):
+    deq = deque(list("☁️🌥⛅️🌤☀️🌤⛅️🌥☁️"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -979,9 +979,9 @@ async def moon(event):
         return
 
 
-@register(outgoing=True, pattern="^.clock$")
+@register(outgoing=True, pattern="^.rain$")
 async def clock(event):
-    deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
+    deq = deque(list("☁️🌦🌧⛈🌩🌨❄️🌨🌩⛈🌧🌦☁️"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -1115,7 +1115,7 @@ async def typewriter(typew):
     else:
         await typew.edit("`Give a text to type!`")
         return
-    sleep_time = 0.003
+    sleep_time = 0.0003
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
