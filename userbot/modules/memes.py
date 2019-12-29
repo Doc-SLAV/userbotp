@@ -535,7 +535,7 @@ SLAP_TEMPLATES = [
     "picks up a {item} and {hits} {victim} with it.",
     "ties {victim} to a chair and {throws} a {item} at them.",
     "{hits} {victim} {where} with a {item}.",
-    "ties {victim} to a pole and whips them {where} with a {item}.",
+    "ties {victim} to a pole and whips them {where} with a {item}."
     "gave a friendly push to help {victim} learn to swim in lava.",
     "sent {victim} to /dev/null.", "sent {victim} down the memory hole.",
     "beheaded {victim}.", "threw {victim} off a building.",
@@ -854,12 +854,12 @@ async def zal(zgfy):
             continue
 
         for _ in range(0, 3):
-            zalgint = randint(0, 2)
+            randint = randint(0, 2)
 
-            if zalgint == 0:
+            if randint == 0:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[0]).strip()
-            elif zalgint == 1:
+            elif randint == 1:
                 charac = charac.strip() + \
                     choice(ZALG_LIST[1]).strip()
             else:
@@ -956,8 +956,8 @@ async def moon(event):
 
 
 @register(outgoing=True, pattern="^.rain$")
-async def rain(event):
-    deq = deque(list("☁️🌦🌧⛈🌩🌨🌩⛈🌧🌦☁️"))
+async def moon(event):
+    deq = deque(list("⛈🌧🌦☁️☁️🌦🌧⛈🌩🌨🌩"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -968,20 +968,8 @@ async def rain(event):
 
 
 @register(outgoing=True, pattern="^.sun$")
-async def sun(event):
-    deq = deque(list("☀️🌤⛅️🌥☁️🌥⛅️🌤"))
-    try:
-        for x in range(32):
-            await sleep(0.1)
-            await event.edit("".join(deq))
-            deq.rotate(1)
-    except BaseException:
-        return
-
-
-@register(outgoing=True, pattern="^.garis$")
-async def garis(event):
-    deq = deque(list("- \ | / - \ | / -"))
+async def moon(event):
+    deq = deque(list("🌥☁️🌥⛅️🌤☀️🌤⛅️"))
     try:
         for x in range(32):
             await sleep(0.1)
@@ -1090,17 +1078,17 @@ async def scam(event):
     ]
     input_str = event.pattern_match.group(1)
     args = input_str.split()
-    if len(args) == 0:  # Let bot decide action and time
+    if len(args) is 0:  # Let bot decide action and time
         scam_action = choice(options)
         scam_time = randint(30, 60)
-    elif len(args) == 1:  # User decides time/action, bot decides the other.
+    elif len(args) is 1:  # User decides time/action, bot decides the other.
         try:
             scam_action = str(args[0]).lower()
             scam_time = randint(30, 60)
         except ValueError:
             scam_action = choice(options)
             scam_time = int(args[0])
-    elif len(args) == 2:  # User decides both action and time
+    elif len(args) is 2:  # User decides both action and time
         scam_action = str(args[0]).lower()
         scam_time = int(args[1])
     else:
@@ -1127,7 +1115,7 @@ async def typewriter(typew):
     else:
         await typew.edit("`Give a text to type!`")
         return
-    sleep_time = 0.03
+    sleep_time = 0.003
     typing_symbol = "|"
     old_text = ""
     await typew.edit(typing_symbol)
@@ -1141,6 +1129,153 @@ async def typewriter(typew):
         await sleep(sleep_time)
 
 
+@register(outgoing=True, pattern="^.leave$")
+async def leave(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`You must Leaving dis Group kek!`")
+
+
+@register(outgoing=True, pattern="^.fail$")  
+async def fail(e):
+   if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ `" 
+                     "`\n████▌▄▌▄▐▐▌█████ `"    
+                     "`\n████▌▄▌▄▐▐▌▀████ `"       
+                     "`\n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ `")    
+
+
+@register(outgoing=True, pattern="^.lol$")
+async def lol(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n╱┏┓╱╱╱╭━━━╮┏┓╱╱╱╱ `" 
+                     "`\n╱┃┃╱╱╱┃╭━╮┃┃┃╱╱╱╱ `"       
+                     "`\n╱┃┗━━┓┃╰━╯┃┃┗━━┓╱ `" 
+                     "`\n╱┗━━━┛╰━━━╯┗━━━┛╱ `") 
+ 
+ 
+                                                                                   
+@register(outgoing=True, pattern="^.lool$")
+async def lool(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n╭╭━━━╮╮┈┈┈┈┈┈┈┈┈┈\n┈┃╭━━╯┈┈┈┈▕╲▂▂╱▏┈\n┈┃┃╱▔▔▔▔▔▔▔▏╱▋▋╮┈`"
+                     "`\n┈┃╰▏┃╱╭╮┃╱╱▏╱╱▆┃┈\n┈╰━▏┗━╰╯┗━╱╱╱╰┻┫┈\n┈┈┈▏┏┳━━━━▏┏┳━━╯┈`"
+                     "`\n┈┈┈▏┃┃┈┈┈┈▏┃┃┈┈┈┈ `")
+                     
+
+@register(outgoing=True, pattern="^.stfu$")
+async def stfu(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n██████████████████████████████`"
+                     "`\n██▀▀▀▀████▀▀▀▀████▀▀▀▀▀███▀▀██▀▀█`"
+                     "`\n█──────██──────██───────██──██──█`"
+                     "`\n█──██▄▄████──████──███▄▄██──██──█`"
+                     "`\n█▄────▀████──████────█████──██──█`"
+                     "`\n█▀▀██──████──████──███████──██──█`"        
+                     "`\n█──────████──████──███████──────█`"      
+                     "`\n██▄▄▄▄█████▄▄████▄▄████████▄▄▄▄██`"    
+                     "`\n█████████████████████████████████`")    
+
+
+@register(outgoing=True, pattern="^.gtfo$")
+async def gtfo(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n███████████████████████████████ `" 
+                     "`\n█▀▀▀▀▀▀▀█▀▀▀▀▀▀█▀▀▀▀▀▀▀█▀▀▀▀▀▀█ `" 
+                     "`\n█───────█──────█───────█──────█ `" 
+                     "`\n█──███──███──███──███▄▄█──██──█ `" 
+                     "`\n█──███▄▄███──███─────███──██──█ `" 
+                     "`\n█──██───███──███──██████──██──█ `" 
+                     "`\n█──▀▀▀──███──███──██████──────█ `" 
+                     "`\n█▄▄▄▄▄▄▄███▄▄███▄▄██████▄▄▄▄▄▄█ `" 
+                     "`\n███████████████████████████████ `")  
+                                  
+
+@register(outgoing=True, pattern="^.nih$")
+async def nih(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n(\_/)`"
+                     "`\n( •_•)`"
+                     "\n >🌹  *ini buat kamu"
+                     "`\n                    `"
+                     "`\n(\_/)`"
+                     "`\n( •_•)`"
+                     "`\n🌹<\  *tapi boong`")
+
+
+@register(outgoing=True, pattern="^.fag$")  
+async def gtfo(e):
+   if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n█████████`" 
+                     "`\n█▄█████▄█`"    
+                     "`\n█▼▼▼▼▼`"       
+                     "`\n█       STFU FAGGOT'S`"
+                     "`\n█▲▲▲▲▲`"
+                     "`\n█████████`"
+                    "`\n ██   ██`")               
+
+
+@register(outgoing=True, pattern="^.taco$")  
+async def taco(e):
+   if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("\n{\__/}"
+                     "\n(●_●)"
+                     "\n( >🌮 Want a taco?")
+
+
+@register(outgoing=True, pattern="^.paw$")  
+async def paw(e):
+   if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`(=ↀωↀ=)")
+
+
+@register(outgoing=True, pattern="^.tf$")  
+async def tf(e):
+   if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("(̿▀̿ ̿Ĺ̯̿̿▀̿ ̿)̄  ")  
+       
+                  
+@register(outgoing=True, pattern="^.gey$")            
+async def gey(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n┈┈┈╭━━━━━╮┈┈┈┈┈\n┈┈┈┃┊┊┊┊┊┃┈┈┈┈┈`"
+                     "`\n┈┈┈┃┊┊╭━╮┻╮┈┈┈┈\n┈┈┈╱╲┊┃▋┃▋┃┈┈┈┈\n┈┈╭┻┊┊╰━┻━╮┈┈┈┈`"
+                     "`\n┈┈╰┳┊╭━━━┳╯┈┈┈┈\n┈┈┈┃┊┃╰━━┫┈NIGGA U GEY`"
+                    "\n┈┈┈┈┈┈┏━┓┈┈┈┈┈┈")    
+
+
+@register(outgoing=True, pattern="^.gay$")            
+async def gey(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n┈┈┈╭━━━━━╮┈┈┈┈┈\n┈┈┈┃┊┊┊┊┊┃┈┈┈┈┈`"
+                     "`\n┈┈┈┃┊┊╭━╮┻╮┈┈┈┈\n┈┈┈╱╲┊┃▋┃▋┃┈┈┈┈\n┈┈╭┻┊┊╰━┻━╮┈┈┈┈`"
+                     "`\n┈┈╰┳┊╭━━━┳╯┈┈┈┈\n┈┈┈┃┊┃╰━━┫┈BAPAQ U GAY`"
+                    "\n┈┈┈┈┈┈┏━┓┈┈┈┈┈┈")    
+
+
+@register(outgoing=True, pattern="^.bot$")
+async def bot(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("` \n   ╲╲╭━━━━╮ \n╭╮┃▆┈┈▆┃╭╮ \n┃╰┫▽▽▽┣╯┃ \n╰━┫△△△┣━╯`"
+                     "`\n╲╲┃┈┈┈┈┃  \n╲╲┃┈┏┓┈┃ `")
+
+
+@register(outgoing=True, pattern="^.hey$")
+async def hey(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("\n┈┈┈╱▔▔▔▔╲┈╭━━━━━\n┈┈▕▂▂▂▂▂▂▏┃HEY!┊😀`"
+                     "`\n┈┈▕▔▇▔▔┳▔▏╰┳╮HEY!┊\n┈┈▕╭━╰╯━╮▏━╯╰━━━\n╱▔▔▏▅▅▅▅▕▔▔╲┈┈┈┈`"
+                     "`\n▏┈┈╲▂▂▂▂╱┈┈┈▏┈┈┈`")
+
+
+@register(outgoing=True, pattern="^.nou$")
+async def nou(e):
+    if not e.text[0].isalpha() and e.text[0] not in ("/", "#", "@", "!"):
+        await e.edit("`\n┈╭╮╭╮\n┈┃┃┃┃\n╭┻┗┻┗╮`"
+                     "`\n┃┈▋┈▋┃\n┃┈╭▋━╮━╮\n┃┈┈╭╰╯╰╯╮`"
+                     "`\n┫┈┈  NoU\n┃┈╰╰━━━━╯`"
+"`\n┗━━┻━┛`")                   
+
+                                                                                    
 CMD_HELP.update({
     "memes":
     ".cowsay\
