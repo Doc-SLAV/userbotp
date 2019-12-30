@@ -40,12 +40,12 @@ async def fastpurger(purg):
         \nPurged {str(count)} messages")
 
     if BOTLOG:
-    apus = await purg.client.send_message(
+        await purg.client.send_message(
             BOTLOG_CHATID,
             "Purge of " + str(count) + " messages done successfully.")
     await sleep(2)
     await done.delete()
-    await apus.delete()
+    await purg.delete()
 
 
 @register(outgoing=True, pattern="^.purgeme")
