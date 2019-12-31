@@ -123,12 +123,16 @@ async def pipcheck(pip):
 async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
-                     "τнє ϐοτ ιѕ αϲτινє  ^_^ \n"
-                     f"ατ υя ѕєяνιϲє \n\n"
+                     "╔══════════════════════╗\n"
+                     "     τнє ϐοτ ιѕ αϲτινє  ^_^ \n"                    
+                     f"     ατ υя ѕєяνιϲє \n"
+                     f" ══════════════════════  \n"
                      f"τєℓєτнοи νєяѕιοи : [ {version.__version__} ] \n"
                      f"ργτнοи           : [ {python_version()} ] \n"
                      f"υѕєя             : [ {DEFAULTUSER} ] \n\n"
                      f"ɦαѵε α ɳเcε ∂αყ ^_^ \n"
+                     f"╚══════════════════════╝\n"
+                     f"
                      "`")
 
 
