@@ -124,7 +124,7 @@ async def amireallyalive(alive):
     """ For .alive command, check if the bot is running.  """
     await alive.edit("`"
                      "╔══════════════════════╗\n"
-                     "     τнє ϐοτ ιѕ αϲτινє  ^_^ \n"                    
+                     f"     τнє ϐοτ ιѕ αϲτινє  ^_^ \n"                    
                      f"     ατ υя ѕєяνιϲє \n"
                      f" ══════════════════════  \n"
                      f"τєℓєτнοи νєяѕιοи : [ {version.__version__} ] \n"
@@ -132,7 +132,7 @@ async def amireallyalive(alive):
                      f"υѕєя             : [ {DEFAULTUSER} ] \n\n"
                      f"ɦαѵε α ɳเcε ∂αყ ^_^ \n"
                      f"╚══════════════════════╝\n"
-                     f"
+                     f""
                      "`")
 
 
