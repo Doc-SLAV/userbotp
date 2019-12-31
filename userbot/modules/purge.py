@@ -73,6 +73,7 @@ async def purgeme(delme):
     await sleep(2)
     i = 1
     await smsg.delete()
+    await delme.delete()
 
 
 @register(outgoing=True, pattern="^.del$")
